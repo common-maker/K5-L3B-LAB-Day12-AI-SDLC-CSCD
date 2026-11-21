@@ -126,7 +126,8 @@ class Rules(unittest.TestCase):
         self.assertEqual(names(sim.step(Inp(interact=True))), ["cook_started"])
 
     def test_ngoai_ban_kinh_khong_lam_gi(self):
-        sim = make(customers=[customer()], stock={"bong_sung": 2}, pos=[STOVE_B1[0] + 1.6, STOVE_B1[1]])
+        # Đứng bên trái B1: bên phải 1.6 m lại nằm trong bán kính của B2 [5,8] (v1.1).
+        sim = make(customers=[customer()], stock={"bong_sung": 2}, pos=[STOVE_B1[0] - 1.6, STOVE_B1[1]])
         self.assertEqual(sim.step(Inp(interact=True)), [])
         self.assertEqual(sim.stoves[0]["state"], "idle")
 
