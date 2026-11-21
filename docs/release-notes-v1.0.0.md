@@ -2,7 +2,7 @@
 
 Game 2D về Út Sen ở chợ nổi Rạch Sen. Buổi sáng em lặn bắt cá, hái rau trên sông Chín Khúc. Buổi tối em nấu và phục vụ khách trên nhà bè của Má Tư, rồi dùng tiền mua nâng cấp cho lần lặn sau. Một lượt chơi chuẩn kéo dài 5 Ngày. Bản này chạy theo Test Contract v1.3.
 
-- Commit bàn giao: `main` (tag `phase-4` và `v1.0.0`)
+- Commit bàn giao: `fd4df05` (tag `phase-4` và `v1.0.0`)
 - Đóng gói: `choi-noi-v1.0.0.zip` (đính kèm trong GitHub Release `v1.0.0`)
 
 ## Điểm mới theo từng phase
