@@ -23,10 +23,20 @@ class QuanSim:
     mode = "quan"
     phase = "quan"
 
-    def __init__(self, tuning, scenario, streams, ids, inventory=None):
+    def __init__(self, tuning, scenario, streams, ids, inventory=None, plan_dishes=None):
+        """`plan_dishes`: id món trong kế hoạch Ngày (mode `day` truyền `day_plan[i].dishes`).
+        None = quán chạy riêng, khách chọn trong cả menu (Test Contract v1.1 mục 2)."""
         t = tuning["quan"]
         self.t = t
         self.menu = tuning["menu"]
+        if plan_dishes is None:
+            self.dish_ids = sorted(self.menu)
+        else:
+            unknown = sorted(set(plan_dishes) - set(self.menu))
+            if unknown:
+                from ..errors import BadInput
+                raise BadInput(f"kế hoạch Ngày có món ngoài menu: {unknown}")
+            self.dish_ids = sorted(set(plan_dishes))
         self.rng = streams
         self.ids = ids
         p = scenario.get("player", {})
@@ -304,7 +314,9 @@ class QuanSim:
         if not free:
             return
         avail = self.available_stock()
-        dishes = [d for d in sorted(self.menu)
+        # Lọc theo kế hoạch trước (self.dish_ids), rồi theo kho khả dụng. Không giới hạn số suất:
+        # bán đủ số suất dự kiến rồi khách vẫn gọi tiếp được nếu đủ nguyên liệu.
+        dishes = [d for d in self.dish_ids
                   if all(avail.get(k, 0) >= n for k, n in self.menu[d]["recipe"].items())]
         if not dishes:
             events.append(("no_dish", {}))
