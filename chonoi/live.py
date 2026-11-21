@@ -278,6 +278,10 @@ def main(argv=None) -> int:
         sys.stderr.write(f"không mở được cổng {a.port}: {e}\n")
         return 1
     server.start()
+    try:  # Windows với console cp1252 hoặc stdout là ống: in tiếng Việt không được làm sập máy chủ
+        sys.stdout.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
     print(f"Mở trình duyệt tại {server.url}  (chế độ {a.mode}, seed {a.seed}). Ctrl+C để dừng.", flush=True)
     try:
         while True:

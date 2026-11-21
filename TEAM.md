@@ -4,9 +4,9 @@
 
 | Thành viên | GitHub handle | Module chính | Vai quy trình | Người dự phòng cho |
 |---|---|---|---|---|
-| Lê Bảo | `LeBao403` | `sim/gather` (Lát 1, Contract) | Integrator (giữ `docs/contracts/`, gắn tag) | `LaanLee` |
-| Lê Hải Lân | `LaanLee` | `sim/gather` (Lát 2, Đóng gói) | Scrum / Release (canh giờ, standup) | `LeBao403` |
-| Nguyễn Đức Lâm | `TheDLCrimson` | `sim/quan` (Lát 3, Day/Shop) | PO (hỏi Anh Năm, giữ `docs/clarify.md`) | `baoduy2048` |
+| Lê Bảo | `LeBao403` | `sim/gather` (Lát 1, Contract) | Integrator (giữ `docs/contracts/`, gắn tag) | `laaaaanleeeee` |
+| Lê Hải Lân | `laaaaanleeeee` | `sim/gather` (Lát 2, Đóng gói) | Scrum / Release (canh giờ, standup) | `LeBao403` |
+| Lưu Nguyễn Chí Đức | `TheDLCrimson` | `sim/quan` (Lát 3, Day/Shop) | PO (hỏi Anh Năm, giữ `docs/clarify.md`) | `baoduy2048` |
 | Bảo Duy | `baoduy2048` | `sim/quan` (Lát 4, QA Bench/Soak) | Hỗ trợ lát chậm & kiểm thử | `TheDLCrimson` |
 | Nguyễn Hậu | `common-maker` | `client/ui`, `qa` | QA Lead (HUD, Smoke, Verification) | cả nhóm |
 
