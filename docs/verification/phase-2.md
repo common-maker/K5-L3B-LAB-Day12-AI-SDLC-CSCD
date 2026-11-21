@@ -31,6 +31,6 @@ Kết quả ghi theo commit đã chạy kiểm; "chờ merge" nghĩa là đạt 
 - Yêu cầu nào đạt / chưa đạt:
 - Điều cần chỉnh cho phase sau:
 
-## Ghi chú trung thực về tag (Phase 3)
-- Tag `phase-2` **gắn trễ**: đến lúc ghi file này `origin` chưa có tag nào. Theo `PHAN-CONG-PHASE-3.md`, `phase-2` sẽ gắn trên `main` sau khi gộp (210/211 test lúc đó, đỏ là `test_e_qa_p1` của `common-maker`). `test_e_qa_p1` đã sửa ở commit `c62603c`, nên bản gộp hiện tại xanh (236 OK, 2 bỏ qua).
-- Phần chưa đạt tại thời điểm gắn tag: `TEAM.md` chưa điền, ảnh DevTools FPS, ảnh từng màn UI vòng ngày, token của một số thành viên trong `docs/ai-usage-log.md`.
+## Ghi chú trung thực về tag (Phase 3 & Phase 4)
+- Tag `phase-2` **gắn trễ** (sau hạn 1:55): `common-maker` đã gắn và đẩy tag `phase-2` trỏ tới `72f1f29` (commit `main` ngay trước khi bật v1.2, theo `PHAN-CONG-PHASE-4.md`).
+- Phần chưa đạt tại thời điểm gắn tag `72f1f29`: `TEAM.md` chưa điền (đã bổ sung ở Phase 4), ảnh DevTools FPS, ảnh từng màn UI vòng ngày.

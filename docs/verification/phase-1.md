@@ -26,4 +26,4 @@
 
 ## Ghi chú trung thực về tag (Phase 3)
 - Tag `phase-1` **gắn trễ**: theo `PHAN-CONG-PHASE-3.md` tag đặt vào commit `759caeb` (đủ lát 1–4, HUD, verification P1, `contract_version` 1.0, 105/105 test xanh, commit cuối trước khi nền v1.1 vào). Đến lúc ghi file này `origin` chưa có tag.
-- Phần chưa đạt tại tag: `AC-P1-14` (xem bảng): `TEAM.md` chưa điền đủ 5 thành viên, `check_team.py` thoát mã 1; `CREDITS.md` chờ nguồn ảnh `assets/fish/`; token của B, D và phản tư của A, B, C, D chưa đủ. Các bằng chứng trong `docs/proof/phase-1/` chạy ở `contract_version` 1.0, nên **không còn khớp `main` hiện tại (1.1)**; bản chạy lại ở Phase 2 nằm trong `docs/proof/phase-2/`.
+- Phần chưa đạt tại tag: `AC-P1-14` (xem bảng): tại thời điểm gắn tag `759caeb`, `TEAM.md` chưa điền đủ 5 thành viên; `CREDITS.md` chờ nguồn ảnh `assets/fish/`. **Cập nhật Phase 4:** `common-maker` đã gắn và đẩy tag `phase-1` trỏ vào `759caeb` trên `origin` (gắn trễ) và điền đủ `TEAM.md` trên `main`. Các bằng chứng trong `docs/proof/phase-1/` chạy ở `contract_version` 1.0, nên **không còn khớp `main` hiện tại (1.3)**; bản chạy lại ở Phase 2 nằm trong `docs/proof/phase-2/`.

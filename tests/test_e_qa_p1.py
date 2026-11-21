@@ -7,6 +7,7 @@ import unittest
 import urllib.error
 import urllib.request
 
+from chonoi import fresh
 from chonoi.contract import load_contract
 from chonoi.live import LiveGame, LiveServer
 from helpers import ROOT, Workdir, read_jsonl, run_headless, snapshots, write_json
@@ -16,7 +17,9 @@ class ContractTuningRangesTest(unittest.TestCase):
     def test_contract_v10_required_fields_and_ranges(self):
         with open(os.path.join(ROOT, "game.contract.json"), encoding="utf-8") as f:
             c = json.load(f)
-        self.assertEqual(c["contract_version"], "1.1")
+        self.assertEqual(c["contract_version"], "1.3")
+        self.assertTrue(c.get("bench_cmd"))
+        self.assertTrue(c.get("soak_cmd"))
         self.assertTrue(isinstance(c["team_size"], int) and not isinstance(c["team_size"], bool))
         self.assertTrue(4 <= c["team_size"] <= 6)
 
@@ -80,7 +83,8 @@ class ContractTuningRangesTest(unittest.TestCase):
 class SmokeTwoProcessExtraTest(unittest.TestCase):
     def test_two_process_all_four_kinds_and_score_formula(self):
         with Workdir() as w:
-            hold = ["ca_loc", "ca_linh", "ca_linh", "ca_linh", "bong_dien_dien", "bong_sung", "bong_sung"]
+            kinds = ["ca_loc", "ca_linh", "ca_linh", "ca_linh", "bong_dien_dien", "bong_sung", "bong_sung"]
+            hold = [{"id": f"I{i}", "kind": k, "fresh": 100} for i, k in enumerate(kinds, 1)]
             sc = write_json(w.path("sc.json"), {"gather": {"hold": hold}})
             inp = write_json(w.path("in.json"), {"frames": [{"tick": 0, "interact": True}]})
             inv = w.path("inv.json")
@@ -89,15 +93,18 @@ class SmokeTwoProcessExtraTest(unittest.TestCase):
             self.assertEqual(code, 0, err)
             with open(inv, encoding="utf-8") as f:
                 saved = json.load(f)
-            expected = {"bong_dien_dien": 1, "bong_sung": 2, "ca_linh": 3, "ca_loc": 1}
-            self.assertEqual(saved, {"items": expected})
+            self.assertEqual([it["id"] for it in saved["items"]], [f"I{i}" for i in range(1, 8)])
+            self.assertEqual([it["kind"] for it in saved["items"]], kinds)
 
             code, err = run_headless("--mode", "quan", "--seed", "42", "--inventory", inv,
                                      "--ticks", "0", "--out", w.path("q.jsonl"))
             self.assertEqual(code, 0, err)
             rows = read_jsonl(w.path("q.jsonl"))
             snap = snapshots(rows)[0]
-            self.assertEqual(snap["stock"], expected)
+            self.assertEqual([(x["id"], x["kind"]) for x in snap["stock"]],
+                             [(x["id"], x["kind"]) for x in saved["items"]])
+            for a, b in zip(snap["stock"], saved["items"]):
+                self.assertAlmostEqual(a["fresh"], b["fresh"], places=3)
             self.assertEqual(snap["score"], snap["earned"] + 100 * math.floor(snap["reputation"]))
 
     def test_two_process_empty_hold_and_quan_determinism(self):
@@ -109,7 +116,7 @@ class SmokeTwoProcessExtraTest(unittest.TestCase):
                                      "--ticks", "1", "--out", w.path("g.jsonl"), "--inventory-out", inv)
             self.assertEqual(code, 0, err)
             with open(inv, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {}})
+                self.assertEqual(json.load(f), {"items": []})
 
             for i in (1, 2):
                 code, err = run_headless("--mode", "quan", "--seed", "42", "--inventory", inv,
@@ -122,7 +129,8 @@ class SmokeTwoProcessExtraTest(unittest.TestCase):
 class LiveHudAndAssetsTest(unittest.TestCase):
     def test_live_serves_updated_hud_quan_state_and_fish_assets(self):
         tuning = load_contract()["tuning"]
-        server = LiveServer(LiveGame("quan", tuning, {}, 1, inventory={"ca_loc": 2}), port=0)
+        inv_items = [{"id": "I1", "kind": "ca_loc", "fresh": 100}, {"id": "I2", "kind": "ca_loc", "fresh": 100}]
+        server = LiveServer(LiveGame("quan", tuning, {}, 1, inventory=[fresh.from_public(it) for it in inv_items]), port=0)
         server.start()
         try:
             base = f"http://127.0.0.1:{server.port}"
@@ -136,7 +144,9 @@ class LiveHudAndAssetsTest(unittest.TestCase):
                 self.assertEqual(r.status, 200)
                 st = json.loads(r.read())
             self.assertEqual(st["mode"], "quan")
-            self.assertEqual(st["stock"], {"ca_loc": 2})
+            self.assertEqual([(x["id"], x["kind"]) for x in st["stock"]], [("I1", "ca_loc"), ("I2", "ca_loc")])
+            for x in st["stock"]:
+                self.assertTrue(99.0 <= x["fresh"] <= 100.0, x)
             for k in ("stoves", "tables", "reputation", "score"):
                 self.assertIn(k, st)
 
@@ -154,6 +164,18 @@ class LiveHudAndAssetsTest(unittest.TestCase):
             ctx.exception.close()
         finally:
             server.stop()
+
+    def test_hud_has_three_alerts_and_high_contrast(self):
+        with open(os.path.join(ROOT, "chonoi", "web", "index.html"), encoding="utf-8") as f:
+            html = f.read()
+        for token in ("Thủy quái!", "Hết hơi!", "Khách sắp giận!", "highContrast", "[H] Tương phản"):
+            self.assertIn(token, html)
+
+    def test_bench_renderer_interface(self):
+        from chonoi.bench_render import Renderer
+        r = Renderer()
+        for method in ("open", "draw", "close"):
+            self.assertTrue(callable(getattr(r, method, None)), method)
 
 
 if __name__ == "__main__":

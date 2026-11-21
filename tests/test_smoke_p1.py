@@ -182,8 +182,8 @@ class Movement(unittest.TestCase):
 
     def test_time_ends_gather_and_keeps_hold(self):
         with Workdir() as w:
-            sc = write_json(w.path("sc.json"), {"gather": {"hold": ["ca_loc"], "time_left_ticks": 3,
-                                                           "player": {"pos": [50, 10]}}})
+            sc = write_json(w.path("sc.json"), {"gather": {"hold": [{"id": "I1", "kind": "ca_loc", "fresh": 100}],
+                                                           "time_left_ticks": 3, "player": {"pos": [50, 10]}}})
             inv = w.path("inv.json")
             code, err = run_headless("--mode", "gather", "--seed", "1", "--ticks", "100", "--scenario", sc,
                                      "--inventory-out", inv, "--out", w.path("o.jsonl"))
@@ -195,14 +195,23 @@ class Movement(unittest.TestCase):
             self.assertEqual(end_ev[0]["data"]["reason"], "time")
             self.assertEqual(rows[-1]["reason"], "time")
             with open(inv, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {"ca_loc": 1}})
+                saved = json.load(f)
+            self.assertEqual(len(saved["items"]), 1)
+            self.assertEqual(saved["items"][0]["id"], "I1")
+            self.assertEqual(saved["items"][0]["kind"], "ca_loc")
+            self.assertAlmostEqual(saved["items"][0]["fresh"], (24000 - 3 * 2) / 240, places=6)
 
 
 class Integration(unittest.TestCase):
     def test_inv_01_gather_writes_inventory_quan_reads_it(self):
-        """Ví dụ smoke test trong PRD-0 mục G: cập bến ở tick 0, quán đọc kho đúng nội dung."""
+        """Ví dụ smoke test trong PRD-0 mục G (chuyển sang kho cá thể v1.2/v1.3): cập bến ở tick 0, quán đọc kho đúng nội dung."""
         with Workdir() as w:
-            sc = write_json(w.path("sc.json"), {"gather": {"hold": ["ca_loc", "bong_sung", "bong_sung"]}})
+            hold = [
+                {"id": "I1", "kind": "ca_loc", "fresh": 100},
+                {"id": "I2", "kind": "bong_sung", "fresh": 100},
+                {"id": "I3", "kind": "bong_sung", "fresh": 100},
+            ]
+            sc = write_json(w.path("sc.json"), {"gather": {"hold": hold}})
             inp = write_json(w.path("in.json"), frames({"tick": 0, "interact": True}))
             inv = w.path("inv.json")
             code, err = run_headless("--mode", "gather", "--seed", "42", "--ticks", "1", "--scenario", sc,
@@ -210,14 +219,24 @@ class Integration(unittest.TestCase):
             self.assertEqual(code, 0, err)
             with open(inv, encoding="utf-8") as f:
                 saved = json.load(f)
-            self.assertEqual(saved, {"items": {"bong_sung": 2, "ca_loc": 1}})
+            self.assertEqual([it["id"] for it in saved["items"]], ["I1", "I2", "I3"])
+            self.assertEqual([it["kind"] for it in saved["items"]], ["ca_loc", "bong_sung", "bong_sung"])
+            for it in saved["items"]:
+                self.assertAlmostEqual(it["fresh"], 23998 / 240, places=6)
             end = events(read_jsonl(w.path("r.jsonl")), "gather_end")[0]["data"]
             self.assertEqual(end["reason"], "docked")
-            self.assertEqual(end["inventory"], saved)
+            self.assertEqual([(x["id"], x["kind"]) for x in end["inventory"]["items"]],
+                             [(x["id"], x["kind"]) for x in saved["items"]])
+            for a, b in zip(end["inventory"]["items"], saved["items"]):
+                self.assertAlmostEqual(a["fresh"], b["fresh"], places=3)
             code, err = run_headless("--mode", "quan", "--seed", "42", "--ticks", "0", "--inventory", inv,
                                      "--out", w.path("q.jsonl"))
             self.assertEqual(code, 0, err)
-            self.assertEqual(snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"], {"bong_sung": 2, "ca_loc": 1})
+            q_stock = snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"]
+            self.assertEqual([(x["id"], x["kind"]) for x in q_stock],
+                             [(x["id"], x["kind"]) for x in saved["items"]])
+            for a, b in zip(q_stock, saved["items"]):
+                self.assertAlmostEqual(a["fresh"], b["fresh"], places=3)
 
     def test_inv_01_not_written_when_tick_limit_first(self):
         with Workdir() as w:
