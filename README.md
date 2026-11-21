@@ -1,6 +1,6 @@
 # Day 12 — AI SDLC: Quán Ăn Chợ Nổi (Nhóm CSCD)
 
-> **Nhóm 5 thành viên (`CSCD`)** · Game 2D quản lý quán ăn miền Tây Nam Bộ qua **4 phase** (Test Contract v1.0): Út Sen lặn bắt cá, hái rau trên sông Chín Khúc vào buổi sáng (`gather`) rồi tối mở quán trên nhà bè phục vụ khách (`quan`).
+> **Nhóm 5 thành viên (`CSCD`)** · Game 2D quản lý quán ăn miền Tây Nam Bộ qua **4 phase** (Test Contract v1.3): Út Sen lặn bắt cá, hái rau trên sông Chín Khúc vào buổi sáng (`gather`) rồi tối mở quán trên nhà bè phục vụ khách (`quan`).
 
 ## Yêu cầu môi trường
 
@@ -34,15 +34,19 @@ python3 -m chonoi.live --mode quan --inventory kho.json
 | `R` | Chơi lại từ đầu (`chonoi.live`) | Chơi lại từ đầu (`chonoi.live`) |
 | `Esc` / `P` | Tạm dừng / tiếp tục | Tạm dừng / tiếp tục |
 | `1` / `2` / `Enter` | Màn Shop (`--mode day`): mua oxy / mua máu / đóng Shop | — |
+| `H` | Bật / tắt chế độ tương phản cao | Bật / tắt chế độ tương phản cao |
 | `M` | Về menu | Về menu |
 
 ## Cách tính điểm & Luật ngắn
 
 - **Công thức điểm:** `score = earned + 100 × floor(reputation)` (uy tín khởi đầu `3.0`, kẹp trong `[0, 5]`; tiền tính theo nghìn đồng).
-- **Thực đơn cố định (3 món):**
+- **Thực đơn (6 món, giá gốc trước nhân độ tươi trung bình):**
   - **Cá lóc nướng trui** (`ca_loc_nuong_trui`): `ca_loc ×1`, nấu `6s`, giá `60k`
   - **Gỏi bông súng** (`goi_bong_sung`): `bong_sung ×2`, nấu `4s`, giá `40k`
   - **Lẩu cá linh bông điên điển** (`lau_ca_linh_dien_dien`): `ca_linh ×3 + bong_dien_dien ×1`, nấu `10s`, giá `120k`
+  - **Canh chua cá lóc** (`canh_chua_ca_loc`): `ca_loc ×1 + bong_dien_dien ×1`, nấu `8s`, giá `90k`
+  - **Cá kèo nướng** (`ca_keo_nuong`): `ca_keo ×2`, nấu `6s`, giá `70k`
+  - **Lẩu mắm** (`lau_mam`): `ca_linh ×2 + ca_keo ×1 + keo_neo ×1 + bong_dien_dien ×1`, nấu `12s`, giá `200k`
 - **Boa & Uy tín:** Phục vụ khi tỷ lệ kiên nhẫn còn lại `>= 0.5` được boa `floor(base_price × 0.2)`; thu tiền có boa cộng `+0.2` uy tín; khách chờ hết kiên nhẫn bỏ đi trừ `-0.5` uy tín; khách chờ rời lúc hết giờ (`closing`) không trừ uy tín.
 
 ## Chạy test & Headless (1 lệnh)
@@ -71,12 +75,12 @@ python3 -m chonoi.headless --mode quan --seed 42 --inventory /tmp/catch.json --t
 
 Bằng chứng chạy thật và ma trận truy vết xem tại [`docs/proof/phase-1/smoke-2proc-log.txt`](docs/proof/phase-1/smoke-2proc-log.txt) và [`docs/verification/phase-1.md`](docs/verification/phase-1.md). Chi tiết khung kỹ thuật ở [`docs/STARTER.md`](docs/STARTER.md).
 
-## Hợp đồng file kho (`gather` → `quan`)
+## Hợp đồng file kho (`gather` → `quan`, v1.2/v1.3)
 
-File kho chỉ chứa khóa `"items"` ánh xạ 4 loại nguyên liệu (`ca_loc`, `ca_linh`, `bong_dien_dien`, `bong_sung`) sang số nguyên không âm, bỏ khóa bằng `0` (kho rỗng là `{"items":{}}`):
+File kho chứa khóa `"items"` là mảng các cá thể `{id, kind, fresh}` sắp theo `id` (6 loại: `ca_loc`, `ca_linh`, `ca_keo`, `bong_dien_dien`, `bong_sung`, `keo_neo`; `fresh` ∈ `[0, 100]`, `< 30` là hàng ươn; kho rỗng là `{"items":[]}`):
 
 ```json
-{"items":{"bong_sung":2,"ca_loc":1}}
+{"items":[{"id":"I1","kind":"ca_loc","fresh":99.99166666666666},{"id":"I2","kind":"bong_sung","fresh":99.99166666666666}]}
 ```
 
 Xem chi tiết hợp đồng tại [`docs/contracts/README.md`](docs/contracts/README.md) và ví dụ mẫu tại [`docs/contracts/inventory.sample.json`](docs/contracts/inventory.sample.json).

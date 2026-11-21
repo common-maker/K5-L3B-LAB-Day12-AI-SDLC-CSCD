@@ -1,11 +1,9 @@
 # Quán Ăn Chợ Nổi v1.0.0 (nhóm CSCD)
 
-> **NHÁP.** Các chỗ đánh dấu ⏳ cần chốt trước khi bấm Publish: điền số bench thật, kết quả kiểm chế độ tương phản cao, tên file zip, commit bàn giao.
-
 Game 2D về Út Sen ở chợ nổi Rạch Sen. Buổi sáng em lặn bắt cá, hái rau trên sông Chín Khúc. Buổi tối em nấu và phục vụ khách trên nhà bè của Má Tư, rồi dùng tiền mua nâng cấp cho lần lặn sau. Một lượt chơi chuẩn kéo dài 5 Ngày. Bản này chạy theo Test Contract v1.3.
 
-- Commit bàn giao: ⏳ `<hash>` (tag `phase-4`, cùng commit với Release này)
-- Đóng gói: ⏳ `choi-noi-v1.0.0.zip` (đính kèm bên dưới)
+- Commit bàn giao: `0ad4c08` (tag `phase-4` và `v1.0.0`)
+- Đóng gói: `choi-noi-v1.0.0.zip` (đính kèm trong GitHub Release `v1.0.0`)
 
 ## Điểm mới theo từng phase
 
@@ -26,7 +24,7 @@ Game 2D về Út Sen ở chợ nổi Rạch Sen. Buổi sáng em lặn bắt cá
 
 **Phase 4: phát hành**
 - Benchmark có render (`bench_cmd`) và soak headless 10 Ngày (`soak_cmd`).
-- Cảnh báo bằng chữ và biểu tượng cho thủy quái gần, oxy sắp hết, khách sắp giận. ⏳ Chế độ tương phản cao.
+- Cảnh báo bằng chữ và biểu tượng cho thủy quái gần (`"Thủy quái!"`), oxy sắp hết (`"Hết hơi!"`), khách sắp giận (`"Khách sắp giận!"`), kèm chế độ tương phản cao (`[H]` / `?hc=1`).
 - Đóng gói chạy từ clone sạch.
 
 ## Cách chạy
@@ -64,17 +62,17 @@ python3 -m chonoi.soak --seed 7 --days 10 --out soak.json
 | Hạng mục | Kết quả | Bằng chứng |
 |---|---|---|
 | Soak 10 Ngày, seed 7 | `days_completed` 10, `crashes` 0 | `docs/proof/phase-4/soak.json` |
-| Benchmark seed 42, 30 s, 1280×720 | ⏳ avg ___ FPS, 1% low ___ FPS, load ___ ms | ⏳ `docs/proof/phase-4/bench.json` |
-| Test tự động | ⏳ ___/___ đạt | `docs/verification/phase-4.md` |
+| Benchmark seed 42, 30 s, 1280×720 | avg 153.26 FPS, 1% low 34.89 FPS, load 902 ms | `docs/proof/phase-4/bench.json` |
+| Test tự động | 297/297 đạt (3 skipped có điều kiện) | `docs/verification/phase-4.md` |
 
 ## Giới hạn đã biết
 
 - Bot của soak chỉ hái ở mặt nước và phục vụ khách theo luật sẵn có, không lặn bắt cá, nên điểm soak thấp. Ticket-04 chỉ chấm `days_completed` và `crashes`.
 - Chọn vị trí 8 đàn cá đầu ca, quãng lùi của quái (`recoil_dist` là tổng 2 m) và ngưỡng độ sâu của quái (`depths[0]` của loài) là giả định của nhóm, ghi trong `docs/clarify.md` và `docs/contracts/README.md` mục 5.6.
-- Benchmark mở cửa sổ thật nên cần màn hình. ⏳ Ghi thêm giới hạn của phần render sau khi E chốt cách vẽ.
+- Benchmark mở cửa sổ thật bằng Tkinter (`chonoi/bench_render.py`) nên cần màn hình (Linux không màn hình chạy qua `xvfb-run`).
 - Mở rộng của Phase 3 (dòng nước lũ, khách đặt trước) và Phase 4 (bảng xếp hạng, phụ đề SFX) chưa làm.
-- ⏳ Các mục còn lại sau kiểm thử cuối.
+- Phản tư cá nhân của `baoduy2048` (`docs/members/baoduy2048.md`) và nguồn gói ảnh `assets/fish/` trong `CREDITS.md` đang chờ bổ sung.
 
 ## Ghi nguồn
 
-Tài sản ngoài và công cụ AI đã dùng: xem `CREDITS.md`. Giấy phép: ⏳ `LICENSE`. Cách nhóm làm việc, quyết định kỹ thuật và nhật ký dùng AI: `docs/adr/`, `docs/contracts/README.md`, `docs/retro.md`, `docs/ai-usage-log.md`, `docs/members/`.
+Tài sản ngoài và công cụ AI đã dùng: xem `CREDITS.md`. Giấy phép: `LICENSE` (MIT). Cách nhóm làm việc, quyết định kỹ thuật và nhật ký dùng AI: `docs/adr/`, `docs/contracts/README.md`, `docs/retro.md`, `docs/ai-usage-log.md`, `docs/members/`.
