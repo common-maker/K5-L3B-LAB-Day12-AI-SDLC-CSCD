@@ -3,7 +3,7 @@
   "team": "CSCD",
   "team_size": 5,
   "build_cmd": "true",
-  "run_cmd": "python3 -m chonoi.live --mode gather",
+  "run_cmd": "python3 -m chonoi.live --mode day",
   "headless_cmd": "python3 -m chonoi.headless",
   "bench_cmd": "python3 -m chonoi.bench",
   "soak_cmd": "python3 -m chonoi.soak",

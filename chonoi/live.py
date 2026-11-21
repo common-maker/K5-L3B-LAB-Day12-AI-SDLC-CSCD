@@ -244,7 +244,7 @@ class LiveServer:
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="chonoi.live", description="Chơi trực tiếp trên trình duyệt (v1.1).")
-    p.add_argument("--mode", required=True, choices=["gather", "quan", "day"])
+    p.add_argument("--mode", default="day", choices=["gather", "quan", "day"], help="chế độ chơi (mặc định: day)")
     p.add_argument("--days", type=int, default=None, help="chỉ với day: số Ngày (1..5, mặc định 5)")
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--port", type=int, default=8000, help="0 = cổng ngẫu nhiên")

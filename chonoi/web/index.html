@@ -1902,10 +1902,13 @@ function overlay(w, h) {
   } else if (ui.screen === "play" && snap && snap.finished) {
     ctx.fillStyle = "rgba(8,12,18,0.65)";
     ctx.fillRect(0, 0, w, h);
-    pixelBox(w / 2 - 240, h / 2 - 90, 480, 180, "#182330", "#080b0f", "#ffe082");
-    text("Kết thúc: " + (snap.reason || ""), w / 2, h / 2 - 30, { size: 24, align: "center", color: "#ffe082" });
-    drawButton("Chơi lại [R]", w / 2 - 190, h / 2 + 16, 180, 46, startNewGame, "#2e6b4e", "#81c784");
-    drawButton("Về Menu", w / 2 + 10, h / 2 + 16, 180, 46, () => { ui.screen = "menu"; });
+    pixelBox(w / 2 - 260, h / 2 - 100, 520, 200, "#182330", "#080b0f", "#ffe082");
+    text("Kết thúc: " + (snap.reason || ""), w / 2, h / 2 - 42, { size: 24, align: "center", color: "#ffe082" });
+    if (snap.mode === "gather") {
+      text("Chế độ đơn lẻ (--mode gather) · Dùng --mode day để chơi Ngày -> Đêm", w / 2, h / 2 - 8, { size: 18, align: "center", color: "#80d8ff" });
+    }
+    drawButton("Chơi lại [R]", w / 2 - 190, h / 2 + 24, 180, 46, startNewGame, "#2e6b4e", "#81c784");
+    drawButton("Về Menu", w / 2 + 10, h / 2 + 24, 180, 46, () => { ui.screen = "menu"; });
   }
 }
 
